@@ -2,7 +2,7 @@
 import google.generativeai as genai
 
 # Get your free key from https://aistudio.google.com/app/apikey
-genai.configure(api_key="AIzaSyAzfdjtwMMNpQ5qRF34vPvLWehsDPLGvM8")
+genai.configure(api_key="")
 model = genai.GenerativeModel('gemini-2.0-flash')
 
 def query_model(prompt):
