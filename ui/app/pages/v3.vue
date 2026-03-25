@@ -120,32 +120,6 @@
             </div>
           </div>
 
-        
-
-          <!-- DSS Weights -->
-          <div class="mb-6">
-            <div class="flex items-center justify-between mb-3">
-              <p class="text-[11px] uppercase font-semibold tracking-wide text-gray-600 dark:text-gray-400">DSS Decision Weights</p>
-              <UTooltip text="Adjust how the AI balances factors when recommending activities">
-                <UIcon name="i-lucide-info" class="size-4 text-gray-400 cursor-help" />
-              </UTooltip>
-            </div>
-
-          </div>
-
-          <!-- Group Size -->
-          <div class="mb-8">
-            <p class="text-[11px] uppercase font-semibold tracking-wide text-gray-500 dark:text-gray-400 mb-2">Group Size</p>
-            <div class="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3">
-              <UButton @click="groupSize = Math.max(1, groupSize - 1)" icon="i-lucide-minus" color="neutral" variant="ghost" size="xs" />
-              <div class="flex-1 text-center">
-                <span class="text-2xl font-bold text-gray-900 dark:text-white tabular-nums">{{ groupSize }}</span>
-                <span class="text-[11px] text-gray-400 ml-1">{{ groupSize === 1 ? 'person' : 'people' }}</span>
-              </div>
-              <UButton @click="groupSize = Math.min(50, groupSize + 1)" icon="i-lucide-plus" color="neutral" variant="ghost" size="xs" />
-            </div>
-          </div>
-
           <!-- CTA -->
           <UButton
             @click="runAdvisor"
@@ -157,18 +131,18 @@
             class="rounded-xl py-3 shadow-sm"
             icon="i-lucide-sparkles"
           >
-            {{ analyzing ? 'Analyzing...' : 'Get AI Recommendations' }}
+            {{ analyzing ? 'Analyzing...' : 'Get Climate Advice' }}
           </UButton>
 
           <p v-if="!selectedLocation" class="text-[11px] text-center text-gray-400 mt-2">Select a location to continue</p>
         </UCard>
 
-        <!-- DSS Log -->
+        <!-- Climate Log -->
         <UCard v-if="dssLog.length" :ui="{ base: 'rounded-2xl shadow-sm', body: { padding: 'p-4' } }">
           <button @click="showLog = !showLog" class="flex items-center justify-between w-full group">
             <div class="flex items-center gap-2">
               <UIcon name="i-lucide-file-search" class="size-4 text-amber-500" />
-              <span class="text-[11px] uppercase font-semibold tracking-widest text-amber-500">DSS Reasoning Log</span>
+              <span class="text-[11px] uppercase font-semibold tracking-widest text-amber-500">Climate Reasoning Log</span>
               <UBadge color="success" variant="soft" size="xs">{{ dssLog.length }}</UBadge>
             </div>
 
@@ -228,7 +202,7 @@
             <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-1">Where are you headed?</h2>
 
             <p class="text-sm text-gray-500 dark:text-gray-400 max-w-xs">
-              Select your location, pick a date and time, then let our AI Decision Support System find the perfect activity.
+              Select your location, date, and time to get climate-based guidance on what to do and what to wear.
             </p>
 
             <div class="mt-10 grid grid-cols-3 gap-4 w-full max-w-xs">
@@ -285,7 +259,7 @@
           </div>
         </UCard>
 
-        <!-- RESULTS (WEATHER + SCORING + ACTIVITIES) -->
+        <!-- RESULTS (WEATHER + CLIMATE SUGGESTIONS) -->
         <template v-if="results && !analyzing">
 
           <!-- WEATHER -->
@@ -323,7 +297,7 @@
             <div class="pt-4 border-t border-gray-100 dark:border-gray-800">
               <div class="flex items-center gap-2 mb-2">
                 <UIcon name="i-lucide-flask-conical" class="size-4 text-primary" />
-                <span class="text-[11px] uppercase font-semibold tracking-wider text-primary">DSS Weather Assessment</span>
+                <span class="text-[11px] uppercase font-semibold tracking-wider text-primary">Climate Assessment</span>
               </div>
 
               <div class="flex flex-wrap gap-1.5">
@@ -362,7 +336,7 @@
                   </ul>
                 </div>
 
-                <div  v-show="false" class="rounded-xl border border-gray-200 dark:border-gray-700 p-3 bg-white dark:bg-gray-800/40">
+                <div class="rounded-xl border border-gray-200 dark:border-gray-700 p-3 bg-white dark:bg-gray-800/40">
                   <div class="flex items-center gap-1.5 mb-2 text-[11px] uppercase tracking-wide font-semibold text-gray-600 dark:text-gray-300">
                     <UIcon name="i-lucide-briefcase" class="size-3.5 text-primary" />
                     Packing
@@ -378,69 +352,22 @@
             </div>
           </UCard>
 
-          <!-- SCORING -->
-          <UCard :ui="{ base: 'rounded-2xl shadow-sm', body: { padding: 'p-6' } }">
-            <div class="flex items-center gap-2 mb-6">
-              <UIcon name="i-lucide-bar-chart-3" class="size-4 text-violet-500" />
-              <span class="text-[11px] uppercase tracking-widest font-semibold text-violet-500">DSS Multi-Criteria Scoring</span>
-            </div>
-
-            <div class="space-y-5">
-              <div v-for="c in results.dssScores" :key="c.name">
-                <div class="flex justify-between text-[11px] mb-1">
-                  <span class="text-gray-600 dark:text-gray-400 flex items-center gap-1.5">
-                    <UIcon :name="c.icon" class="size-4" />
-                    {{ c.name }}
-                  </span>
-
-                  <span
-                    class="font-mono font-semibold"
-                    :class="c.score >= 70 ? 'text-green-500' : c.score >= 40 ? 'text-amber-500' : 'text-red-500'"
-                  >
-                    {{ c.score }}/100
-                  </span>
-                </div>
-
-                <div class="h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
-                  <div
-                    class="h-full rounded-full transition-all duration-700 ease-out"
-                    :style="{ width: c.score + '%', background: c.color }"
-                  />
-                </div>
-              </div>
-            </div>
-          </UCard>
-
           <!-- ACTIVITIES -->
           <div>
             <div class="flex items-center gap-2 mb-4">
               <UIcon name="i-lucide-sparkles" class="size-4 text-primary" />
-              <span class="text-[11px] uppercase font-semibold tracking-widest text-primary">AI Recommendations</span>
+              <span class="text-[11px] uppercase font-semibold tracking-widest text-primary">What This Weather Is Good For</span>
               <UBadge color="primary" variant="soft" size="xs" class="ml-auto">{{ results.activities.length }} Options</UBadge>
             </div>
 
             <div class="space-y-4">
               <UCard
-                v-for="(activity, idx) in results.activities"
+                v-for="activity in results.activities"
                 :key="activity.id"
                 @click="selectedActivity = selectedActivity?.id === activity.id ? null : activity"
                 :ui="{ base: 'cursor-pointer rounded-2xl transition-all bg-white dark:bg-gray-800 shadow-sm', body: { padding: 'p-5' } }"
                 :class="selectedActivity?.id === activity.id ? 'ring-1 ring-primary' : 'hover:ring-1 hover:ring-primary/30'"
               >
-                <!-- Rank badge -->
-                <div
-                  :class="[
-                    'absolute -top-2 right-4 px-2 py-0.5 rounded-full text-[10px] font-semibold border backdrop-blur-sm',
-                    idx === 0
-                      ? 'bg-amber-50 border-amber-200 text-amber-600'
-                      : idx === 1
-                        ? 'bg-gray-50 border-gray-200 text-gray-500'
-                        : 'bg-orange-50 border-orange-200 text-orange-500'
-                  ]"
-                >
-                  {{ idx === 0 ? '#1 Best' : idx === 1 ? '#2' : '#3' }}
-                </div>
-
                 <div class="flex items-start gap-4">
                   <!-- Icon -->
                   <div class="w-12 h-12 rounded-2xl bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
@@ -450,30 +377,12 @@
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2 flex-wrap mb-1">
                       <h4 class="font-semibold text-gray-900 dark:text-white">{{ activity.name }}</h4>
-
-                      <UBadge :color="activity.intensityColor" variant="soft" size="xs">{{ activity.intensity }}</UBadge>
-
-                      <UBadge v-if="idx === 0" color="success" variant="soft" size="xs">
-                        <UIcon name="i-lucide-star" class="size-3 mr-1" />
-                        Best Match
-                      </UBadge>
                     </div>
 
                     <p class="text-xs leading-relaxed text-gray-500 dark:text-gray-400">{{ activity.description }}</p>
-
-                    <!-- Score bar -->
-                    <div class="flex items-center gap-2 mt-3">
-                      <span class="text-[10px] uppercase tracking-wide text-gray-400">DSS Score</span>
-
-                      <div class="flex-1 h-1.5 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
-                        <div
-                          class="h-full rounded-full transition-all duration-700"
-                          :style="{ width: activity.dssScore + '%', background: 'linear-gradient(90deg, rgb(var(--color-primary-500)), #a855f7)' }"
-                        />
-                      </div>
-
-                      <span class="text-xs font-mono font-semibold text-primary">{{ activity.dssScore }}%</span>
-                    </div>
+                    <p class="text-xs leading-relaxed text-emerald-600 dark:text-emerald-400 mt-2">
+                      <span class="font-semibold">Clothing:</span> {{ activity.clothingRecommendation }}
+                    </p>
 
                     <!-- Tags -->
                     <div class="flex flex-wrap gap-1.5 mt-3">
@@ -494,7 +403,7 @@
                       >
                         <div class="flex items-center gap-2 mb-3">
                           <UIcon name="i-lucide-lightbulb" class="size-4 text-primary" />
-                          <span class="text-[11px] font-semibold uppercase tracking-wide text-primary">DSS Decision Rationale</span>
+                          <span class="text-[11px] font-semibold uppercase tracking-wide text-primary">Why It Fits This Climate</span>
                         </div>
 
                         <ul class="space-y-1.5">
@@ -508,39 +417,18 @@
                           </li>
                         </ul>
 
-                        <div class="flex gap-2 mt-4">
-                          <UButton size="xs" color="primary" icon="i-lucide-check-circle" class="rounded-lg">
-                            Accept
-                          </UButton>
-                          <UButton
-                            size="xs"
-                            color="neutral"
-                            variant="ghost"
-                            icon="i-lucide-refresh-cw"
-                            @click.stop="runAdvisor"
-                            class="rounded-lg"
-                          >
-                            Regenerate
-                          </UButton>
-                        </div>
+                        <UButton
+                          size="xs"
+                          color="neutral"
+                          variant="ghost"
+                          icon="i-lucide-refresh-cw"
+                          @click.stop="runAdvisor"
+                          class="rounded-lg mt-2"
+                        >
+                          Refresh Advice
+                        </UButton>
                       </div>
                     </Transition>
-                  </div>
-
-                  <!-- Score -->
-                  <div class="text-right flex-shrink-0">
-                    <div
-                      class="text-2xl font-bold tabular-nums"
-                      :class="activity.dssScore >= 75 ? 'text-green-500' : activity.dssScore >= 50 ? 'text-amber-500' : 'text-red-500'"
-                    >
-                      {{ activity.dssScore }}
-                    </div>
-                    <div class="text-[10px] text-gray-400 uppercase tracking-wide">score</div>
-
-                    <UIcon
-                      :name="selectedActivity?.id === activity.id ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
-                      class="size-4 text-gray-400 mt-1"
-                    />
                   </div>
                 </div>
               </UCard>
@@ -552,7 +440,7 @@
             <div class="flex items-center gap-2 mb-4">
               <UIcon name="i-lucide-clock" class="size-4 text-amber-500" />
               <span class="text-[11px] uppercase font-semibold tracking-widest text-amber-500">
-                Hourly Forecast — DSS Window
+                Hourly Forecast Around Your Selected Time
               </span>
             </div>
 
@@ -605,20 +493,19 @@ interface Location { lat: number; lon: number; name: string }
 interface DSSLog { msg: string; type: 'info' | 'decision' | 'warning' }
 interface Activity {
   id: string; name: string; iconName: string; description: string
-  intensity: string; intensityColor: string; dssScore: number
-  tags: string[]; reasoning: string[]
+  tags: string[]; reasoning: string[]; clothingRecommendation: string
 }
 interface WeatherStat { icon: string; value: string; label: string }
 interface WeatherData {
   temp: number; description: string; iconName: string
+  rainProb: number; weatherCode: number
   stats: WeatherStat[]; dssFlags: { label: string; icon: string; color: string }[]
   dressingTips: string[]; packingTips: string[]; advisory: string
 }
 interface HourlyForecast { time: string; temp: number; iconName: string; rain: number; isSelected: boolean }
-interface DSSCriteria { name: string; icon: string; score: number; color: string }
 interface Results {
   location: Location; weather: WeatherData
-  activities: Activity[]; dssScores: DSSCriteria[]; hourly: HourlyForecast[]
+  activities: Activity[]; hourly: HourlyForecast[]
 }
 
 const locationMode = ref<'manual' | 'map' | 'gps'>('manual')
@@ -631,8 +518,6 @@ const mapReady = ref(false)
 const mapContainer = ref<HTMLElement | null>(null)
 const selectedDate = ref<string>(new Date().toISOString().slice(0, 10))
 const selectedTime = ref('12:00')
-const groupSize = ref(2)
-const selectedPrefs = ref<string[]>(['outdoor', 'social'])
 const analyzing = ref(false)
 const results = ref<Results | null>(null)
 const selectedActivity = ref<Activity | null>(null)
@@ -659,41 +544,23 @@ const locationModes = [
   { value: 'gps', label: 'GPS', icon: 'i-lucide-navigation' },
 ]
 
-const activityPrefs = [
-  { value: 'outdoor', label: 'Outdoor', icon: 'i-lucide-tree-pine' },
-  { value: 'indoor', label: 'Indoor', icon: 'i-lucide-house' },
-  { value: 'social', label: 'Social', icon: 'i-lucide-users' },
-  { value: 'solo', label: 'Solo', icon: 'i-lucide-user' },
-  { value: 'adventure', label: 'Adventure', icon: 'i-lucide-zap' },
-  { value: 'relaxed', label: 'Relaxed', icon: 'i-lucide-waves' },
-  { value: 'cultural', label: 'Cultural', icon: 'i-lucide-theater' },
-  { value: 'food', label: 'Food', icon: 'i-lucide-utensils' },
-]
-
-const dssWeights = ref([
-  { key: 'weather', label: 'Weather Suitability', icon: 'i-lucide-cloud-sun', value: 40 },
-  { key: 'preference', label: 'User Preferences', icon: 'i-lucide-target', value: 30 },
-  { key: 'social', label: 'Group Suitability', icon: 'i-lucide-users', value: 20 },
-  { key: 'time', label: 'Time Appropriateness', icon: 'i-lucide-clock', value: 10 },
-])
-
 const featureHighlights = [
   { icon: 'i-lucide-cloud-sun', label: 'Live Weather' },
-  { icon: 'i-lucide-bot', label: 'AI Scoring' },
-  { icon: 'i-lucide-scale', label: 'DSS Weights' },
+  { icon: 'i-lucide-list-checks', label: 'Climate Suggestions' },
+  { icon: 'i-lucide-shirt', label: 'Clothing Tips' },
 ]
 
 const loadingMessages = [
   'Fetching real-time weather data...',
-  'Running DSS multi-criteria analysis...',
-  'Scoring activity options with AI...',
+  'Analyzing climate conditions...',
+  'Building practical suggestions...',
   'Compiling your recommendations...',
 ]
 const loadingSteps = [
   'Geocoding location',
   'Fetching weather forecast',
-  'Running DSS scoring engine',
-  'Generating AI recommendations',
+  'Analyzing climate conditions',
+  'Preparing recommendations',
 ]
 
 function wcToIconName(wc: number): string {
@@ -719,12 +586,6 @@ function wcToDesc(wc: number): string {
 function addLog(type: DSSLog['type'], msg: string) {
   dssLog.value.unshift({ type, msg })
   if (dssLog.value.length > 20) dssLog.value.pop()
-}
-
-function togglePref(val: string) {
-  const idx = selectedPrefs.value.indexOf(val)
-  if (idx > -1) selectedPrefs.value.splice(idx, 1)
-  else selectedPrefs.value.push(val)
 }
 
 function formatDateTime(date: string, time: string): string {
@@ -801,8 +662,10 @@ function buildWeatherAdvice(temp: number, rainProb: number, wind: number, uv: nu
   }
 
   if (rainProb >= 60 || (wc >= 51 && wc <= 82)) {
-    dressingTips.push('Prefer water-resistant shoes or quick-dry footwear')
+    dressingTips.push('Use a rainproof outer layer and water-resistant shoes')
     packingTips.push('Pack a compact umbrella or rain jacket')
+  } else if (rainProb >= 30) {
+    dressingTips.push('Carry a light layer in case of a brief shower')
   }
 
   if (wind >= 30) {
@@ -833,6 +696,14 @@ function buildWeatherAdvice(temp: number, rainProb: number, wind: number, uv: nu
     packingTips: packingTips.slice(0, 4),
     advisory,
   }
+}
+
+function getClothingRecommendation(temp: number, rainProb: number, wc: number): string {
+  const rainy = rainProb >= 50 || (wc >= 51 && wc <= 82)
+  if (temp <= 10) return rainy ? 'Warm layers + waterproof jacket and closed shoes.' : 'Warm layers, insulated outerwear, and closed shoes.'
+  if (temp <= 18) return rainy ? 'Long sleeves, light jacket, and a rainproof shell.' : 'Long sleeves with a light jacket or hoodie.'
+  if (temp <= 30) return rainy ? 'Breathable clothes with a waterproof light jacket.' : 'Light, breathable outfit with comfortable shoes.'
+  return rainy ? 'Very light breathable clothes plus a thin rain shell.' : 'Very light breathable clothes, hat, and hydration-friendly outfit.'
 }
 
 async function geocodeLocation() {
@@ -954,7 +825,7 @@ async function fetchWeather(lat: number, lon: number): Promise<WeatherData> {
     if (!flags.length) flags.push({ label: 'Ideal Conditions', icon: 'i-lucide-star', color: 'green' })
     const advice = buildWeatherAdvice(temp, rainProb, wind, uv, wc, matchedHour)
     return {
-      temp, description: wcToDesc(wc), iconName: wcToIconName(wc),
+      temp, description: wcToDesc(wc), iconName: wcToIconName(wc), rainProb, weatherCode: wc,
       stats: [
         { icon: 'i-lucide-droplets', value: `${humidity}%`, label: 'Humidity' },
         { icon: 'i-lucide-wind', value: `${wind} km/h`, label: 'Wind' },
@@ -968,7 +839,7 @@ async function fetchWeather(lat: number, lon: number): Promise<WeatherData> {
     }
   } catch {
     return {
-      temp: 24, description: 'Partly cloudy', iconName: 'i-lucide-cloud-sun',
+      temp: 24, description: 'Partly cloudy', iconName: 'i-lucide-cloud-sun', rainProb: 20, weatherCode: 2,
       stats: [{ icon: 'i-lucide-droplets', value: '60%', label: 'Humidity' }, { icon: 'i-lucide-wind', value: '15 km/h', label: 'Wind' }, { icon: 'i-lucide-cloud-rain', value: '20%', label: 'Rain' }, { icon: 'i-lucide-sun', value: '5', label: 'UV Index' }],
       dssFlags: [{ label: 'Estimated Data', icon: 'i-lucide-triangle-alert', color: 'yellow' }],
       dressingTips: ['Wear light layers and adjust based on comfort'],
@@ -995,70 +866,139 @@ async function fetchHourly(lat: number, lon: number): Promise<HourlyForecast[]> 
   } catch { return [] }
 }
 
-function computeTimeScore(): number {
-  const h = parseInt(selectedTime.value.split(':')[0])
-  return h >= 8 && h <= 20 ? 90 : h >= 6 && h <= 22 ? 65 : 30
-}
+function generateActivities(weather: WeatherData): Activity[] {
+  const isRainy = weather.rainProb >= 55 || (weather.weatherCode >= 51 && weather.weatherCode <= 82)
+  const isHot = weather.temp >= 31
+  const isCold = weather.temp <= 12
+  const isCool = weather.temp > 12 && weather.temp <= 20
+  const isEvening = parseInt(selectedTime.value.split(':')[0] ?? '12', 10) >= 17
+  const clothing = getClothingRecommendation(weather.temp, weather.rainProb, weather.weatherCode)
 
-function computeDSSScores(weather: WeatherData, prefs: string[], groupSz: number): DSSCriteria[] {
-  const tempScore = weather.temp >= 18 && weather.temp <= 28 ? 90 : weather.temp >= 10 && weather.temp <= 35 ? 60 : 30
-  const isRainy = weather.dssFlags.some(f => f.label === 'Rain Likely')
+  if (isRainy) {
+    return [
+      {
+        id: 'indoor-cafe',
+        name: 'Cafe, Reading, or Co-working Session',
+        iconName: 'i-lucide-coffee',
+        description: 'Comfortable for rainy conditions with minimal exposure between stops.',
+        tags: ['indoor', 'rain-safe', 'casual'],
+        clothingRecommendation: clothing,
+        reasoning: ['Rain is likely, so an indoor plan is more reliable.', 'Easy to adapt if showers intensify.'],
+      },
+      {
+        id: 'museum-arts',
+        name: 'Museum, Gallery, or Cultural Center',
+        iconName: 'i-lucide-landmark',
+        description: 'A weather-safe way to spend a few hours productively and comfortably.',
+        tags: ['indoor', 'cultural'],
+        clothingRecommendation: clothing,
+        reasoning: ['Keeps plans stable during rainy periods.', 'Good for both day and evening slots.'],
+      },
+      {
+        id: 'mall-cinema',
+        name: 'Mall Walk + Cinema or Indoor Games',
+        iconName: 'i-lucide-clapperboard',
+        description: 'Useful when rain makes outdoor movement inconvenient.',
+        tags: ['indoor', 'social'],
+        clothingRecommendation: clothing,
+        reasoning: ['Indoor venues reduce disruption from rain.', 'Good option when roads/paths are wet.'],
+      },
+    ]
+  }
+
+  if (isHot) {
+    return [
+      {
+        id: 'early-late-walk',
+        name: 'Short Walk in Shade (Early or Late)',
+        iconName: 'i-lucide-trees',
+        description: 'Outdoor time is better in shaded places and cooler hours.',
+        tags: ['outdoor', 'light-activity'],
+        clothingRecommendation: clothing,
+        reasoning: ['Heat is high, so shorter low-intensity options are safer.', 'Hydration and sun protection are important.'],
+      },
+      {
+        id: 'pool-indoor-sport',
+        name: 'Swimming or Indoor Fitness',
+        iconName: 'i-lucide-dumbbell',
+        description: 'Keeps activity levels up while limiting heat stress.',
+        tags: ['fitness', 'heat-aware'],
+        clothingRecommendation: clothing,
+        reasoning: ['Lower heat exposure than long outdoor sessions.', 'Easier to control rest and hydration.'],
+      },
+      {
+        id: 'evening-dining',
+        name: 'Evening Food Spot or Rooftop Chill',
+        iconName: 'i-lucide-utensils',
+        description: 'Better comfort once temperatures begin to drop.',
+        tags: ['social', 'evening'],
+        clothingRecommendation: clothing,
+        reasoning: [isEvening ? 'Your selected time already favors this option.' : 'Usually more comfortable later in the day.'],
+      },
+    ]
+  }
+
+  if (isCold || isCool) {
+    return [
+      {
+        id: 'park-walk',
+        name: 'Park Walk or Light Jog',
+        iconName: 'i-lucide-footprints',
+        description: 'Comfortable for gentle movement when layered appropriately.',
+        tags: ['outdoor', 'wellness'],
+        clothingRecommendation: clothing,
+        reasoning: ['Cool temperatures can be pleasant with layers.', 'Good balance of movement and comfort.'],
+      },
+      {
+        id: 'city-explore',
+        name: 'City Exploring and Photography',
+        iconName: 'i-lucide-camera',
+        description: 'Good visibility and comfort for urban exploration.',
+        tags: ['outdoor', 'casual'],
+        clothingRecommendation: clothing,
+        reasoning: ['Lower heat load supports longer exploration.', 'Simple to pause indoors if needed.'],
+      },
+      {
+        id: 'community-events',
+        name: 'Community Event or Local Market',
+        iconName: 'i-lucide-store',
+        description: 'Flexible option with both indoor and outdoor segments.',
+        tags: ['social', 'flexible'],
+        clothingRecommendation: clothing,
+        reasoning: ['Easy to adapt to changing comfort conditions.', 'Works across daytime and evening.'],
+      },
+    ]
+  }
+
   return [
-    { name: 'Weather Suitability', icon: 'i-lucide-cloud-sun', score: isRainy ? 40 : 85, color: 'rgb(14,165,233)' },
-    { name: 'Temperature Comfort', icon: 'i-lucide-thermometer', score: tempScore, color: 'rgb(168,85,247)' },
-    { name: 'Preference Match', icon: 'i-lucide-target', score: prefs.length >= 2 ? 80 : 50, color: 'rgb(34,197,94)' },
-    { name: 'Group Compatibility', icon: 'i-lucide-users', score: groupSz === 1 ? 70 : groupSz <= 5 ? 90 : groupSz <= 15 ? 75 : 55, color: 'rgb(245,158,11)' },
-    { name: 'Time Appropriateness', icon: 'i-lucide-clock', score: computeTimeScore(), color: 'rgb(236,72,153)' },
-  ]
-}
-
-function generateActivities(weather: WeatherData, prefs: string[], groupSz: number, dssScores: DSSCriteria[]): Activity[] {
-  const isRainy = weather.dssFlags.some(f => f.label === 'Rain Likely')
-  const isHot = weather.temp > 32, isCold = weather.temp < 12
-  const isIdeal = weather.temp >= 18 && weather.temp <= 28 && !isRainy
-  const isEvening = parseInt(selectedTime.value.split(':')[0]) >= 17
-  const weights = Object.fromEntries(dssWeights.value.map(w => [w.key, w.value / 100]))
-  const wScore = dssScores[0].score, tScore = dssScores[1].score
-
-  const all: Activity[] = [
     {
-      id: 'hiking', name: 'Nature Hiking', iconName: 'i-lucide-footprints',
-      description: 'Explore local trails and immerse yourself in nature. Great for fitness and mental clarity.',
-      intensity: 'Moderate', intensityColor: 'yellow', tags: ['outdoor', 'adventure', 'fitness', 'nature'],
-      reasoning: [`Temperature ${weather.temp}°C is ${isIdeal ? 'ideal' : 'acceptable'} for hiking`, `${weather.description} — ${isRainy ? 'moderate caution' : 'suitable conditions'}`, `Group of ${groupSz} ${groupSz <= 6 ? 'is perfect' : 'may need splitting'}`, `Weather weight: ${Math.round(weights.weather * 100)}%`],
-      dssScore: Math.round((wScore * weights.weather + tScore * weights.preference + (prefs.includes('outdoor') ? 90 : 40) * weights.preference + (groupSz <= 8 ? 85 : 55) * weights.social) * 0.8 + (isRainy ? -20 : 0) + (isIdeal ? 15 : 0)),
+      id: 'general-outdoor',
+      name: 'General Outdoor Activities',
+      iconName: 'i-lucide-sun',
+      description: 'Weather is generally favorable for walking, parks, and casual outdoor plans.',
+      tags: ['outdoor', 'balanced'],
+      clothingRecommendation: clothing,
+      reasoning: ['Temperature and rain risk look manageable.', 'Suitable for a wide range of activities.'],
     },
     {
-      id: 'museum', name: 'Museum / Gallery Visit', iconName: 'i-lucide-landmark',
-      description: 'Discover art, history, and culture at a local museum or gallery. Weather-proof choice.',
-      intensity: 'Low', intensityColor: 'blue', tags: ['indoor', 'cultural', 'educational'],
-      reasoning: [isRainy ? 'Rain makes indoor optimal' : 'Weather-independent indoor option', `Cultural pref ${prefs.includes('cultural') ? 'matched ✓' : 'not prioritized'}`, `Group of ${groupSz} fits comfortably`, 'DSS favors indoor when weather score is low'],
-      dssScore: Math.round((isRainy ? 90 : 65) * weights.weather + (prefs.includes('cultural') || prefs.includes('indoor') ? 88 : 55) * weights.preference + 80 * weights.social + 75 * weights.time),
+      id: 'sports-social',
+      name: 'Social Sports or Group Meetups',
+      iconName: 'i-lucide-users',
+      description: 'A good climate window for active and social plans.',
+      tags: ['social', 'active'],
+      clothingRecommendation: clothing,
+      reasoning: ['Comfort level supports moderate activity.', 'Low weather friction for movement.'],
     },
     {
-      id: 'cycling', name: 'City Cycling Tour', iconName: 'i-lucide-bike',
-      description: 'Explore the city on two wheels with scenic routes and hidden local gems.',
-      intensity: 'Moderate', intensityColor: 'green', tags: ['outdoor', 'adventure', 'social', 'fitness'],
-      reasoning: [`Wind: ${weather.stats[1].value} — ${parseInt(weather.stats[1].value) < 25 ? 'manageable' : 'high wind caution'}`, `${weather.temp}°C — ${isHot ? 'warm, hydrate well' : isCold ? 'cool, dress warmly' : 'comfortable'}`, `Suits group of ${groupSz}`, `Adventure pref ${prefs.includes('adventure') ? 'matched ✓' : 'partial match'}`],
-      dssScore: Math.round((isRainy ? 30 : isIdeal ? 88 : 65) * weights.weather + (prefs.includes('outdoor') || prefs.includes('adventure') ? 85 : 55) * weights.preference + (groupSz <= 10 ? 80 : 60) * weights.social + 70 * weights.time),
-    },
-    {
-      id: 'dining', name: 'Local Food Experience', iconName: 'i-lucide-utensils',
-      description: 'Sample authentic local cuisine at a food market or restaurant with great atmosphere.',
-      intensity: 'Low', intensityColor: 'orange', tags: ['indoor', 'social', 'food', 'relaxed'],
-      reasoning: ['Weather-independent — all-conditions activity', `Food pref ${prefs.includes('food') ? 'matched ✓' : 'neutral'}`, `Social dining ideal for ${groupSz} people`, isEvening ? 'Evening — perfect for dinner' : 'Great lunch or brunch timing'],
-      dssScore: Math.round(80 * weights.weather + (prefs.includes('food') || prefs.includes('social') ? 90 : 60) * weights.preference + (groupSz <= 12 ? 88 : 70) * weights.social + (isEvening ? 90 : 70) * weights.time),
-    },
-    {
-      id: 'yoga', name: 'Outdoor Yoga / Meditation', iconName: 'i-lucide-person-standing',
-      description: 'Connect mind and body in a quiet park spot for a mindful, restorative session.',
-      intensity: 'Low', intensityColor: 'violet', tags: ['outdoor', 'solo', 'relaxed', 'wellness'],
-      reasoning: [`Conditions ${isIdeal ? '✓ ideal for wellness' : '— weather consideration needed'}`, `Solo/relaxed pref ${prefs.includes('solo') || prefs.includes('relaxed') ? 'matched ✓' : 'not prioritized'}`, `${groupSz <= 4 ? 'Small group — optimal' : 'May feel crowded'}`, `${!isEvening ? 'Morning timing — great ✓' : 'Evening — find a lit park'}`],
-      dssScore: Math.round((isIdeal ? 85 : isRainy ? 25 : 60) * weights.weather + (prefs.includes('relaxed') || prefs.includes('solo') ? 88 : 50) * weights.preference + (groupSz <= 6 ? 82 : 50) * weights.social + (!isEvening ? 85 : 65) * weights.time),
+      id: 'mixed-day',
+      name: 'Mixed Plan (Outdoor + Indoor)',
+      iconName: 'i-lucide-route',
+      description: 'Combine outdoor time with an indoor backup for flexibility.',
+      tags: ['flexible'],
+      clothingRecommendation: clothing,
+      reasoning: ['Keeps your plan robust if weather shifts.', 'Useful for longer outings.'],
     },
   ]
-
-  return all.map(a => ({ ...a, dssScore: Math.max(10, Math.min(99, a.dssScore)) })).sort((a, b) => b.dssScore - a.dssScore)
 }
 
 async function runAdvisor() {
@@ -1066,28 +1006,29 @@ async function runAdvisor() {
   analyzing.value = true; results.value = null; selectedActivity.value = null
   dssLog.value = []; showLog.value = false; loadingStep.value = 0
   const loc = selectedLocation.value
-  addLog('info', `DSS analysis: ${loc.name}`)
-  addLog('info', `${selectedDate.value} ${selectedTime.value} | Group: ${groupSize.value} | Prefs: ${selectedPrefs.value.join(', ')}`)
+  addLog('info', `Climate analysis: ${loc.name}`)
+  selectedDate.value = clampDateWithinForecast(selectedDate.value)
+  addLog('info', `${selectedDate.value} ${selectedTime.value}`)
 
   for (let i = 0; i < loadingMessages.length; i++) {
     loadingMsg.value = loadingMessages[i]; loadingStep.value = i
     if (i === 0) addLog('decision', 'Fetching weather via Open-Meteo...')
-    if (i === 1) addLog('decision', 'Running multi-criteria scoring...')
-    if (i === 2) addLog('decision', 'Applying decision weights...')
-    if (i === 3) addLog('info', 'Compiling ranked results...')
+    if (i === 1) addLog('decision', 'Analyzing temperature, rain, and timing...')
+    if (i === 2) addLog('decision', 'Building practical activity suggestions...')
+    if (i === 3) addLog('info', 'Compiling climate advice...')
     await new Promise(r => setTimeout(r, 650))
   }
 
   const [weather, hourly] = await Promise.all([fetchWeather(loc.lat, loc.lon), fetchHourly(loc.lat, loc.lon)])
   addLog('decision', `Weather: ${weather.temp}°C — ${weather.description}`)
-  const dssScores = computeDSSScores(weather, selectedPrefs.value, groupSize.value)
-  const activities = generateActivities(weather, selectedPrefs.value, groupSize.value, dssScores)
-  dssWeights.value.forEach(w => addLog('info', `Weight — ${w.label}: ${w.value}%`))
-  addLog('decision', `Top pick: ${activities[0].name} (${activities[0].dssScore})`)
-  addLog('decision', `Complete — ${activities.length} activities ranked`)
+  const activities = generateActivities(weather)
+  if (activities.length) addLog('decision', `Suggested: ${activities[0].name}`)
+  addLog('decision', `Complete — ${activities.length} climate-based options generated`)
 
-  results.value = { location: loc, weather, activities, dssScores, hourly }
-  analyzing.value = false; selectedActivity.value = activities[0]; showLog.value = true
+  results.value = { location: loc, weather, activities, hourly }
+  analyzing.value = false
+  selectedActivity.value = activities[0] ?? null
+  showLog.value = true
 }
 
 function resetAll() {

@@ -1,0 +1,15 @@
+# FastAPI for building the API
+fastapi
+
+# ASGI server to run FastAPI
+uvicorn[standard]
+
+# OpenAI official Python SDK (includes Groq-compatible client)
+openai
+
+# Optional: for async HTTP requests if not included in openai
+httpx
+
+# Typing and path handling
+pydantic
+python-dotenv
